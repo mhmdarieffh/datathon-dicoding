@@ -1,0 +1,23 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Temp files
+*.tmp
+*.log
+data_overview.txt
+stats_overview.txt
+yoy_changes.txt
+~$*.xlsx
