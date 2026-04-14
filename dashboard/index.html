@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aceh Resilience Monitor — Dashboard Intelijen Harga Pangan</title>
+  <meta name="description" content="Platform intelijen bisnis end-to-end untuk mendeteksi anomali harga pangan strategis di pasar-pasar utama Aceh. Pantau 18 komoditas pangan secara real-time.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ═══ Loading Overlay ═══════════════════════════════════════ -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Memuat data komoditas...</div>
+  </div>
+
+  <!-- ═══ App Container ═════════════════════════════════════════ -->
+  <div class="app-container">
+
+    <!-- ── Navbar ────────────────────────────────────────────── -->
+    <nav class="navbar" id="navbar">
+      <div class="navbar-brand">
+        <div class="navbar-logo">A</div>
+        <div>
+          <div class="navbar-title"><span>Aceh Resilience Monitor</span></div>
+          <div class="navbar-subtitle">Platform Intelijen Harga Pangan</div>
+        </div>
+      </div>
+      <div class="navbar-meta">
+        <div class="navbar-badge live">Monitoring Aktif</div>
+        <div class="navbar-date" id="data-date-range">—</div>
+      </div>
+    </nav>
+
+    <!-- ── KPI Overview ─────────────────────────────────────── -->
+    <section id="section-overview">
+      <div id="kpi-grid" class="kpi-grid"></div>
+    </section>
+
+    <!-- ── Status Legend ─────────────────────────────────────── -->
+    <div class="legend-strip">
+      <span class="text-muted" style="font-weight:600">Status Komoditas:</span>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#22c55e"></div>
+        <span>Aman (CV &lt;5%, Kenaikan &lt;10%)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f59e0b"></div>
+        <span>Waspada (CV 5-15% atau Kenaikan 10-20%)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ef4444"></div>
+        <span>Kritis (CV &gt;15% atau Kenaikan &gt;20%)</span>
+      </div>
+    </div>
+
+    <!-- ── Commodity Status Grid ─────────────────────────────── -->
+    <section id="section-status">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><span class="icon">📊</span> Status Komoditas</h2>
+          <p class="section-desc">Klik komoditas untuk melihat detail analisis</p>
+        </div>
+      </div>
+      <div id="commodity-grid" class="commodity-grid"></div>
+    </section>
+
+    <!-- ── Commodity Detail Panel (hidden by default) ────────── -->
+    <div id="detail-panel" class="detail-panel"></div>
+
+    <!-- ── Price Trend Chart ─────────────────────────────────── -->
+    <section id="section-trends">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><span class="icon">📈</span> Tren Harga Komoditas</h2>
+          <p class="section-desc">Harga mingguan rata-rata seluruh komoditas (2023–2025)</p>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div id="trend-category-filter" class="chart-controls"></div>
+        <div class="chart-controls" style="margin-top: -8px; margin-bottom: 20px;">
+          <button id="toggle-forecast-btn" class="chart-btn special" onclick="toggleForecast()">
+            🔮 Tampilkan Prediksi 90 Hari
+          </button>
+        </div>
+        <div class="chart-container tall">
+          <canvas id="chart-price-trend"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Two-Column: Alerts + Anomaly Table ────────────────── -->
+    <section id="section-alerts">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><span class="icon">🚨</span> Sistem Peringatan Dini</h2>
+          <p class="section-desc">Deteksi anomali harga yang melampaui 2σ dari rata-rata bergerak 30 hari</p>
+        </div>
+      </div>
+      <div class="two-col">
+        <!-- Alert Feed -->
+        <div class="glass-card">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">
+            🔔 Feed Peringatan Terbaru
+          </h3>
+          <div id="alert-feed" class="alert-feed"></div>
+        </div>
+        <!-- Anomaly Table -->
+        <div class="glass-card">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">
+            📋 Tabel Anomali Terdeteksi
+          </h3>
+          <div class="anomaly-table-wrap">
+            <table class="anomaly-table" id="anomaly-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Komoditas</th>
+                  <th>Kategori</th>
+                  <th>Harga</th>
+                  <th>MA30</th>
+                  <th>Deviasi</th>
+                  <th>Z-Score</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="anomaly-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── YoY Comparison ────────────────────────────────────── -->
+    <section id="section-yoy">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><span class="icon">📊</span> Perbandingan Year-over-Year</h2>
+          <p class="section-desc">Perubahan harga rata-rata tahunan per komoditas</p>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="chart-container tall">
+          <canvas id="chart-yoy"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Two-Column: Seasonality + Volatility ──────────────── -->
+    <section id="section-analysis">
+      <div class="two-col">
+        <!-- Seasonality Heatmap -->
+        <div>
+          <div class="section-header">
+            <div>
+              <h2 class="section-title"><span class="icon">🗓️</span> Pola Seasonalitas</h2>
+              <p class="section-desc">Z-Score harga bulanan (merah = mahal, hijau = murah)</p>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div id="seasonality-heatmap"></div>
+          </div>
+        </div>
+        <!-- Volatility Heatmap -->
+        <div>
+          <div class="section-header">
+            <div>
+              <h2 class="section-title"><span class="icon">⚡</span> Volatilitas (CV%)</h2>
+              <p class="section-desc">Coefficient of Variation per komoditas per tahun</p>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div id="volatility-heatmap"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Stacked Area Chart ────────────────────────────────── -->
+    <section id="section-category">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><span class="icon">📉</span> Kontribusi Kategori terhadap Total Harga</h2>
+          <p class="section-desc">Harga rata-rata bulanan per kategori (ekskl. Daging Sapi)</p>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="chart-container tall">
+          <canvas id="chart-category-area"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Footer ────────────────────────────────────────────── -->
+    <footer class="footer">
+      <p><strong>Aceh Resilience Monitor (ARM)</strong> — Datathon Dicoding × Microsoft Elevate Training Center</p>
+      <p class="mt-1">Topik: Ketahanan Pangan & Agrikultur Modern | Data: PIHPS 2023–2025</p>
+      <p class="mt-1 text-muted">Powered by Chart.js • Built for policy intelligence</p>
+    </footer>
+
+  </div>
+
+  <!-- Data (embedded to avoid CORS with file://) -->
+  <script src="dashboard_data.js"></script>
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>
