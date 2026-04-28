@@ -331,7 +331,7 @@ function renderPriceTrendChart() {
           titleFont: { family: 'Inter', weight: '600' },
           bodyFont: { family: 'JetBrains Mono', size: 12 },
           callbacks: {
-            label: (ctx) => `${ctx.dataset.label}: ${formatPrice(ctx.raw)}`,
+            label: (ctx) => `${ctx.dataset.label}: ${formatPrice(ctx.parsed.y)}`,
           },
         },
       },
@@ -764,18 +764,19 @@ function renderAIInsight() {
   const panel = document.getElementById('ai-insight-text');
   if (!panel) return;
   const insight = DATA.aiInsight || 'AI Insight tidak tersedia. Silakan konfigurasi Azure OpenAI API Key.';
-  // Typing effect
-  panel.textContent = '';
-  let i = 0;
-  function typeChar() {
-    if (i < insight.length) {
-      panel.textContent += insight[i];
-      i++;
-      setTimeout(typeChar, 12);
-    }
-  }
-  // Small delay so the panel is visible first
-  setTimeout(typeChar, 500);
+  
+  // Convert newlines to HTML paragraphs for rich display
+  const paragraphs = insight.split('\n\n').filter(p => p.trim());
+  const htmlContent = paragraphs.map(p => `<p style="margin-bottom: 12px">${p}</p>`).join('');
+  
+  // Fade-in reveal effect
+  panel.style.opacity = '0';
+  panel.innerHTML = htmlContent;
+  
+  setTimeout(() => {
+    panel.style.transition = 'opacity 0.8s ease';
+    panel.style.opacity = '1';
+  }, 300);
 }
 
 // ── Navigation between tab sections ──────────────────────────────

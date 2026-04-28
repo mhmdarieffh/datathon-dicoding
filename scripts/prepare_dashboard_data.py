@@ -411,31 +411,66 @@ def build_anomaly_context(hist_anomalies, pred_anomalies):
     return "\n".join(lines)
 
 def generate_fallback_insight(hist_anomalies, pred_anomalies, kpi_data):
-    """Generate a smart fallback summary when Azure OpenAI is unavailable."""
+    """Generate a rich, data-driven executive summary when Azure OpenAI is unavailable."""
     critical_items = [a for a in hist_anomalies[:20] if a['severity'] == 'critical']
+    warning_items = [a for a in hist_anomalies[:20] if a['severity'] == 'warning']
     top_critical = critical_items[:3] if critical_items else hist_anomalies[:3]
     
-    names = ", ".join(set(a['shortName'] for a in top_critical))
+    # Get unique critical commodity names with their worst deviation
+    critical_details = {}
+    for a in critical_items[:10]:
+        name = a['shortName']
+        if name not in critical_details or abs(a['deviation_pct']) > abs(critical_details[name]['deviation_pct']):
+            critical_details[name] = a
     
-    pred_text = ""
+    # Build detailed critical commodity descriptions
+    critical_desc_parts = []
+    for name, a in list(critical_details.items())[:3]:
+        critical_desc_parts.append(
+            f"{name} (lonjakan {a['deviation_pct']:+.1f}% pada {a['date']}, "
+            f"harga Rp {a['price']:,.0f} vs rata-rata Rp {a['ma30']:,.0f})"
+        )
+    critical_desc = "; ".join(critical_desc_parts) if critical_desc_parts else "tidak ada"
+    
+    # Build prediction section
+    pred_section = ""
     if pred_anomalies:
-        pred_names = ", ".join(a['shortName'] for a in pred_anomalies[:3])
-        pred_text = (
-            f" Dalam 90 hari ke depan, model prediktif kami mendeteksi potensi "
-            f"lonjakan harga pada komoditas: {pred_names}. "
-            f"Disarankan untuk mempersiapkan stok cadangan dan memantau rantai distribusi."
+        pred_details = []
+        for a in pred_anomalies[:3]:
+            pred_details.append(
+                f"{a['shortName']} (diprediksi naik {a['spike_pct']:+.1f}% "
+                f"menjadi Rp {a['price']:,.0f} dari harga saat ini Rp {a['current_price']:,.0f})"
+            )
+        pred_desc = "; ".join(pred_details)
+        pred_section = (
+            f"\n\n📈 PREDIKSI 90 HARI KE DEPAN: Model machine learning Prophet mendeteksi "
+            f"potensi lonjakan signifikan pada {len(pred_anomalies)} komoditas, terutama: {pred_desc}. "
+            f"Kenaikan ini mengindikasikan tekanan inflasi struktural yang perlu diantisipasi "
+            f"melalui mekanisme stabilisasi harga preventif."
         )
     
+    # Build recommendation section
+    rec_section = (
+        f"\n\n💡 REKOMENDASI STRATEGIS: (1) Prioritaskan operasi pasar untuk komoditas berstatus KRITIS, "
+        f"khususnya kelompok hortikultura yang memiliki volatilitas tertinggi; "
+        f"(2) Koordinasi dengan Dinas Perindustrian dan Perdagangan Provinsi Aceh untuk "
+        f"memastikan kelancaran rantai distribusi dari produsen ke pasar tradisional; "
+        f"(3) Aktifkan mekanisme cadangan pangan daerah (buffer stock) untuk komoditas "
+        f"yang diprediksi mengalami lonjakan dalam 90 hari ke depan."
+    )
+    
     return (
-        f"Berdasarkan analisis sistem Aceh Resilience Monitor terhadap "
-        f"{kpi_data['totalCommodities']} komoditas pangan dengan "
-        f"{kpi_data['totalDataPoints']:,} titik data, "
-        f"terdeteksi {kpi_data['recentAnomalies']} anomali harga dalam 90 hari terakhir. "
-        f"Komoditas yang memerlukan perhatian segera: {names}. "
-        f"Terdapat {kpi_data['criticalAlerts']} komoditas berstatus KRITIS dengan "
-        f"volatilitas tinggi atau kenaikan harga di atas 20% dalam 3 tahun.{pred_text} "
-        f"Rekomendasi: Lakukan koordinasi dengan Dinas Perindustrian dan Perdagangan "
-        f"untuk operasi pasar dan stabilisasi harga pada komoditas kritis."
+        f"🔍 RINGKASAN EKSEKUTIF — Sistem Aceh Resilience Monitor telah menganalisis "
+        f"{kpi_data['totalDataPoints']:,} titik data harga harian dari "
+        f"{kpi_data['totalCommodities']} komoditas pangan strategis "
+        f"(periode {kpi_data['dataStartDate']} s/d {kpi_data['dataEndDate']}). "
+        f"Dalam 90 hari terakhir, terdeteksi {kpi_data['recentAnomalies']} kejadian "
+        f"anomali harga yang melampaui ambang batas statistik (>2σ dari rata-rata bergerak 30 hari). "
+        f"Saat ini terdapat {kpi_data['criticalAlerts']} komoditas berstatus KRITIS dan "
+        f"{kpi_data['warningAlerts']} komoditas berstatus WASPADA."
+        f"\n\n⚠️ KOMODITAS KRITIS: {critical_desc}."
+        f"{pred_section}"
+        f"{rec_section}"
     )
 
 # Attempt Azure OpenAI call
@@ -508,8 +543,16 @@ output_path = DASHBOARD_DIR / 'dashboard_data.json'
 with open(output_path, 'w', encoding='utf-8') as f:
     json.dump(dashboard_data, f, ensure_ascii=False, indent=None)
 
+# Also generate the embedded JS version (for file:// CORS compatibility)
+output_js_path = DASHBOARD_DIR / 'dashboard_data.js'
+with open(output_js_path, 'w', encoding='utf-8') as f:
+    f.write('const DASHBOARD_DATA = ')
+    json.dump(dashboard_data, f, ensure_ascii=False, indent=None)
+    f.write(';')
+
 file_size = os.path.getsize(output_path) / 1024
 print(f'\n✅ Dashboard data saved to {output_path} ({file_size:.0f} KB)')
+print(f'   Also generated: {output_js_path}')
 print(f'   KPIs: {kpi}')
 print(f'   Commodities: {len(commodities)}')
 print(f'   Anomalies: {len(anomalies)}')
