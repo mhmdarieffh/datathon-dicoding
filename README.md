@@ -19,14 +19,14 @@ Aceh Resilience Monitor adalah sistem peringatan dini harga bahan pangan strateg
 
 ```mermaid
 graph LR
-    A[📊 Excel Data<br/>2023-2025] --> B[🐍 Python ETL<br/>Pandas]
-    B --> C[📈 Prophet ML<br/>Forecasting 90 Hari]
-    B --> D[🔍 Z-Score<br/>Anomaly Detection]
-    C --> F[📦 dashboard_data.json]
+    A["📊 Excel Data<br/>2023-2025"] --> B["🐍 Python ETL<br/>Pandas"]
+    B --> C["📈 Prophet ML<br/>Forecasting 90 Hari"]
+    B --> D["🔍 Z-Score<br/>Anomaly Detection"]
+    C --> F["📦 dashboard_data.json"]
     D --> F
-    F --> I[☁️ Azure Blob Storage<br/>(Planned Data Lake)]
-    F --> G[📱 Chart.js Dashboard<br/>Interactive UI]
-    G --> H[☁️ Azure Static Web Apps<br/>Deployment]
+    F --> I["☁️ Azure Blob Storage<br/>(Planned Data Lake)"]
+    F --> G["📱 Chart.js Dashboard<br/>Interactive UI"]
+    G --> H["☁️ Azure Static Web Apps<br/>Deployment"]
 ```
 
 ---
