@@ -44,7 +44,7 @@ graph LR
 | 4 | **ML Forecasting 90 Hari** | 18 model Meta Prophet individual (1 per komoditas) memprediksi harga 90 hari ke depan, termasuk batas kepercayaan atas/bawah (*Confidence Interval*). |
 | 5 | **🚨 Early Warning System (Meta Prophet AI)** | Panel peringatan interaktif yang secara dinamis menyoroti komoditas dengan prediksi lonjakan harga terekstrem (misal: >15%) dalam 90 hari ke depan, lengkap dengan rekomendasi intervensi. |
 | 6 | **Prophet Model Evaluation** | Notebook riset (`evaluate_prophet.ipynb`) dengan backtesting Train/Test Split — metrik MAE, RMSE, dan MAPE untuk ke-18 komoditas. |
-| 7 | **Azure Blob Storage (Planned)** | Persiapan integrasi dengan Azure Blob Storage sebagai data lake untuk menyimpan dan mendistribusikan data dashboard secara cloud-native. |
+| 7 | **Azure Blob Storage Data Lake** | Implementasi penuh Azure Blob Storage sebagai *data lake* untuk menyimpan dan mendistribusikan data JSON *dashboard* secara *cloud-native* dengan keamanan CORS terpusat. |
 
 ---
 
