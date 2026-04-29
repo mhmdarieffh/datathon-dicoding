@@ -8,6 +8,7 @@
 *   Arieff (Project Manager)
 
 **Topik:** Ketahanan Pangan & Agrikultur Modern
+**Live Dashboard:** [https://thankful-river-084494910.7.azurestaticapps.net](https://thankful-river-084494910.7.azurestaticapps.net)
 
 ---
 
@@ -35,7 +36,7 @@ Fungsi utama produk ini adalah memproses data harga historis (2023-2025), mendet
 
 *   **Automated ETL Pipeline (Python & Pandas):** Skrip pemrosesan data otomatis untuk membersihkan dan menstrukturisasi jutaan baris data harga mentah harian menjadi dataset siap analisis.
 *   **Time-Series Forecasting & Anomaly Detection (Meta Prophet):** Implementasi model *Machine Learning* untuk mendeteksi lonjakan harga abnormal (menggunakan perhitungan *Z-Score*) dan memprediksi pergerakan harga 18 komoditas selama 90 hari ke depan secara akurat (MAPE 7.74%).
-*   **Cloud Data Lake (Azure Blob Storage - *Direncanakan*):** Infrastruktur penyimpanan *cloud-native* terpusat untuk mendistribusikan *output* data JSON hasil prediksi AI ke aplikasi.
+*   **Cloud Data Lake (Azure Blob Storage):** Infrastruktur penyimpanan *cloud-native* terpusat yang telah diimplementasikan secara penuh untuk mendistribusikan *output* data JSON hasil prediksi AI langsung ke *frontend* aplikasi secara dinamis (dengan konfigurasi CORS terpusat).
 *   **Real-time Executive Dashboard (HTML, JS, Chart.js):** Visualisasi data premium berdesain *glassmorphism* interaktif tanpa *latency*, menyajikan metrik tren, volatilitas, dan perbandingan YoY (*Year-over-Year*).
 *   **Predictive Early Warning System (Vanilla JS Logic):** Panel peringatan interaktif berbasis probabilitas AI yang secara otomatis menyortir dan menyoroti komoditas dengan prediksi lonjakan harga ekstrem (misal: >15%), lengkap dengan rekomendasi tindakan.
 *   **Cloud Hosting (Azure Static Web Apps):** *Deployment dashboard* yang *scalable*, aman, dan dapat diakses dari peramban mana pun secara global.

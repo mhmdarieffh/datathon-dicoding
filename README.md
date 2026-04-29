@@ -5,8 +5,11 @@
 ![Azure Blob Storage](https://img.shields.io/badge/Azure_Blob_Storage-Data_Lake-0078D4?logo=microsoftazure&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-v4-FF6384?logo=chartdotjs&logoColor=white)
 ![Azure Static Web Apps](https://img.shields.io/badge/Azure-Static_Web_Apps-0078D4?logo=microsoftazure&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Live-success)
 
 > **Platform Intelijen Harga Pangan Berbasis AI** — Dari pemantauan reaktif ke prediksi proaktif.
+
+**🔗 Live Dashboard:** [https://thankful-river-084494910.7.azurestaticapps.net](https://thankful-river-084494910.7.azurestaticapps.net)
 
 Aceh Resilience Monitor adalah sistem peringatan dini harga bahan pangan strategis di Provinsi Aceh yang menggunakan **Machine Learning (Meta Prophet)** terintegrasi dengan **🚨 Early Warning System** untuk memberikan wawasan prediktif lonjakan harga 90 hari ke depan kepada pengambil kebijakan.
 
@@ -24,8 +27,8 @@ graph LR
     B --> D["🔍 Z-Score<br/>Anomaly Detection"]
     C --> F["📦 dashboard_data.json"]
     D --> F
-    F --> I["☁️ Azure Blob Storage<br/>(Planned Data Lake)"]
-    F --> G["📱 Chart.js Dashboard<br/>Interactive UI"]
+    F --> I["☁️ Azure Blob Storage<br/>(Data Lake Endpoint)"]
+    I --> G["📱 Chart.js Dashboard<br/>Interactive UI"]
     G --> H["☁️ Azure Static Web Apps<br/>Deployment"]
 ```
 
@@ -71,7 +74,7 @@ Metode: **Train/Test Split** — Data Training: Jan 2023 – Sep 2025 | Data Tes
 | Visualization | Chart.js v4, Vanilla JS | Dashboard interaktif |
 | Styling | Vanilla CSS (Glassmorphism) | UI/UX premium |
 | Hosting | **Azure Static Web Apps** | Deployment cloud |
-| Cloud Storage | **Azure Blob Storage** | Data lake & distribusi data (Direncanakan) |
+| Cloud Storage | **Azure Blob Storage** | Data lake & endpoint API JSON (Telah Diimplementasikan) |
 | Version Control | Git, GitHub | Kolaborasi tim |
 
 ---
