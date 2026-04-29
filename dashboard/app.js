@@ -62,17 +62,25 @@ function delay(ms) {
 // ── Load Data ────────────────────────────────────────────────────
 async function loadData() {
   try {
-    // Use embedded data (dashboard_data.js) to avoid CORS issues with file://
+    // 1. Try fetching from Azure Blob Storage (Data Lake)
+    const blobUrl = 'https://armdatalake2026.blob.core.windows.net/arm-data/dashboard_data.json';
+    const resp = await fetch(blobUrl);
+    if (resp.ok) {
+      DATA = await resp.json();
+      console.log("Data loaded successfully from Azure Blob Storage (Data Lake)!");
+      return true;
+    } else {
+      throw new Error(`Blob fetch failed with status: ${resp.status}`);
+    }
+  } catch (e) {
+    console.warn('Azure Blob Storage fetch failed (likely CORS not configured). Falling back to local data.', e);
+    
+    // 2. Fallback to embedded local data (Safe mechanism for Datathon)
     if (typeof DASHBOARD_DATA !== 'undefined') {
       DATA = DASHBOARD_DATA;
+      console.log("Data loaded from local fallback.");
       return true;
     }
-    // Fallback to fetch if served via HTTP
-    const resp = await fetch('dashboard_data.json');
-    DATA = await resp.json();
-    return true;
-  } catch (e) {
-    console.error('Failed to load data:', e);
     return false;
   }
 }
