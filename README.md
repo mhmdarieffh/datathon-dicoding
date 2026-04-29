@@ -87,7 +87,6 @@ Metode: **Train/Test Split (Holdout 90 Hari)**
 |---|---|---|
 | Data Processing | Python, Pandas, NumPy | ETL, cleaning, transformasi data kotor Excel |
 | Machine Learning | **Meta Prophet** | Time-series forecasting 90 hari (1 model per komoditas × 18 komoditas) |
-
 | Visualization | Chart.js v4, Vanilla JS | Dashboard interaktif premium |
 | Styling | Vanilla CSS (Glassmorphism) | UI/UX dark mode premium |
 | Cloud Storage | **Azure Blob Storage** | Data Lake — penyimpanan & distribusi dataset JSON terpusat |
