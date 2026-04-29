@@ -4,8 +4,8 @@
 **Informasi Peserta**
 *(Silakan isi tabel ini dengan nama dan email Dicoding kalian bertiga di dokumen asli)*
 *   Aulia Muzhaffar (AI Engineer & Data Scientist)
-*   Ilhaam (Data Engineer & Frontend Developer)
-*   Arieff (Project Manager)
+*   Muhammad Ilhaam Ghiffary (Data Engineer & Frontend Developer)
+*   Muhammad Arief Hidayah (Project Manager % Data Analyst)
 
 **Topik:** Ketahanan Pangan & Agrikultur Modern
 **Live Dashboard:** [https://thankful-river-084494910.7.azurestaticapps.net](https://thankful-river-084494910.7.azurestaticapps.net)
